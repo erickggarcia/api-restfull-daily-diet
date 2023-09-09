@@ -103,4 +103,14 @@ export async function usersRoutes(app: FastifyInstance) {
             return reply.status(500).send({ message: 'Erro interno', e })
         }
     })
+
+    app.post('/logout', async (request, reply) => {
+        try {
+            reply.clearCookie('session_id', {path: '/login'})
+    
+            return reply.status(200).send({message: 'Logout bem-sucedido'})
+        } catch(e) {
+            return reply.status(500).send({ message: 'Erro interno', e })
+        }
+    })
 }
