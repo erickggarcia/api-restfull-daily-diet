@@ -6,32 +6,32 @@ import { z } from "zod"
 
 export async function usersRoutes(app: FastifyInstance) {
 
-    app.post('/register', async(request, reply) => {
+    app.post('/register', async (request, reply) => {
         try {
 
             const createUsersBodySchema = z.object({
-                name: z.string(), 
-                lastName: z.string(), 
-                email: z.string(), 
+                name: z.string(),
+                lastName: z.string(),
+                email: z.string(),
                 passwordRequest: z.string(),
             })
-    
-            const {name, lastName, email, passwordRequest} = createUsersBodySchema.parse(request.body)
-    
-           async function checkIfUserExists() {
+
+            const { name, lastName, email, passwordRequest } = createUsersBodySchema.parse(request.body)
+
+            async function checkIfUserExists() {
                 const user = await knex('users')
                     .where('email', email)
                     .first()
-    
-                return user   
+
+                return user
             }
-    
+
             const userexists = await checkIfUserExists()
-            
-            if(!userexists) {
+
+            if (!userexists) {
                 const salt = bcrypt.genSaltSync()
                 const password = bcrypt.hashSync(passwordRequest, salt)
-    
+
                 await knex('users')
                     .insert({
                         id: randomUUID(),
@@ -41,13 +41,13 @@ export async function usersRoutes(app: FastifyInstance) {
                         password,
                         created_at: new Date().toISOString()
                     })
-    
-                    return reply.status(201).send({message: 'usuário criado com sucesso'})
+
+                return reply.status(201).send({ message: 'usuário criado com sucesso' })
             } else {
-                return reply.status(400).send({message: 'usuário já cadastrado'})
+                return reply.status(400).send({ message: 'usuário já cadastrado' })
             }
         } catch (e) {
-            return reply.status(500).send({message: 'Erro interno', e})
+            return reply.status(500).send({ message: 'Erro interno', e })
         }
     })
 
@@ -59,20 +59,20 @@ export async function usersRoutes(app: FastifyInstance) {
                 email: z.string(),
                 passwordRequest: z.string()
             })
-    
-            const {email, passwordRequest} = loginUserBodySchema.parse(request.body)
+
+            const { email, passwordRequest } = loginUserBodySchema.parse(request.body)
 
             let sessionId = request.cookies.sessionId
 
-            if(!sessionId) {
+            if (!sessionId) {
                 sessionId = randomUUID()
 
                 reply.cookie('sessionId', sessionId, {
-                    path:'/login',
-                    maxAge: 1000 * 60 * 60 *24 * 7 // 7dias
+                    path: '/login',
+                    maxAge: 1000 * 60 * 60 * 24 * 7 // 7dias
                 })
             }
-    
+
             async function checkIfUserExists() {
                 const user = await knex('users')
                     .where('email', email)
@@ -86,12 +86,12 @@ export async function usersRoutes(app: FastifyInstance) {
                 .where('email', email)
                 .update('session_id', sessionId)
 
-    
+
             const userExists = await checkIfUserExists()
             console.log(userExists)
 
-            if(!userExists) {
-                return reply.status(400).send({message: 'Usuário ou senha inválidos'})
+            if (!userExists) {
+                return reply.status(400).send({ message: 'Usuário ou senha inválidos' })
             } else {
                 if (!bcrypt.compareSync(passwordRequest, userExists.password)) {
                     return reply.status(400).send({ message: 'Usuário ou Senha inválidos' })
@@ -106,11 +106,19 @@ export async function usersRoutes(app: FastifyInstance) {
 
     app.post('/logout', async (request, reply) => {
         try {
-            reply.clearCookie('session_id', {path: '/login'})
-    
-            return reply.status(200).send({message: 'Logout bem-sucedido'})
-        } catch(e) {
+            reply.clearCookie('session_id', { path: '/login' })
+
+            return reply.status(200).send({ message: 'Logout bem-sucedido' })
+        } catch (e) {
             return reply.status(500).send({ message: 'Erro interno', e })
         }
+    })
+
+    app.get('/meals', async (request, reply) => {
+        return 'meals'
+    })
+
+    app.post('/meals', async (request, reply) => {
+        return 'meals'
     })
 }
