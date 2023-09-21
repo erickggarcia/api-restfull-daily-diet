@@ -75,7 +75,6 @@ export async function usersRoutes(app: FastifyInstance) {
             }
 
             const userExists = await checkIfUserExists()
-            console.log(userExists)
 
             if (!userExists) {
                 return reply.status(400).send({ message: 'Usuário ou senha inválidos' })
@@ -90,12 +89,21 @@ export async function usersRoutes(app: FastifyInstance) {
                             path: '/',
                             maxAge: 1000 * 60 * 60 * 24 * 7 // 7dias
                         })
+                        await knex('users')
+                            .where('email', email)
+                            .update('session_id', sessionId)
 
                     } else {
+                        sessionId = randomUUID()
+                        reply.cookie('sessionId', sessionId, {
+                            path: '/',
+                            maxAge: 1000 * 60 * 60 * 24 * 7 // 7dias
+                        })
                         // atualiza o sessionId da sessão
                         await knex('users')
                             .where('email', email)
                             .update('session_id', sessionId)
+
 
                         return reply.status(200).send({ message: 'Usuário logado com sucesso' })
                     }
@@ -169,12 +177,10 @@ export async function usersRoutes(app: FastifyInstance) {
                 .select('id')
                 .first()
 
-
             if (user) {
                 const meals = await knex('meals')
                     .where('user_id', user.id)
 
-                console.log(meals)
                 return reply.status(200).send({ message: 'Refeições registradas: ', meals })
             } else {
                 return reply.status(500).send({ message: 'Ainda não existem refeições cadastradas' })
