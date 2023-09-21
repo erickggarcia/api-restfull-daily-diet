@@ -181,7 +181,11 @@ export async function usersRoutes(app: FastifyInstance) {
                 const meals = await knex('meals')
                     .where('user_id', user.id)
 
-                return reply.status(200).send({ message: 'Refeições registradas: ', meals })
+                if (meals.length > 0) {
+                    return reply.status(200).send({ message: 'Refeições registradas: ', meals })
+                } else {
+                    return reply.status(500).send({ message: 'Ainda não existem refeições cadastradas' })
+                }
             } else {
                 return reply.status(500).send({ message: 'Ainda não existem refeições cadastradas' })
             }
