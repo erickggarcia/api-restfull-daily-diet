@@ -1,4 +1,4 @@
-## Esse projeto se trata de uma api-restfull para controle de dieta com as seguintes funcionalidades:
+## Esse projeto se trata de uma api-restfull para controle de dieta com as seguintes funcionalidades.
 
 1. Cria um usuário;
 2. Identifica o usuário entre as requisições;
