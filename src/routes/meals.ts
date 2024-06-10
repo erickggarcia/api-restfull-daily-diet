@@ -1,7 +1,7 @@
 import { FastifyInstance } from 'fastify'
 import z from 'zod'
-import { checkSessionIdExists } from '../src/middlewares/check-session-id-exists'
-import knex from 'knex'
+import { checkSessionIdExists } from '../middlewares/check-session-id-exists'
+import { knex } from '../database'
 import { randomUUID } from 'crypto'
 
 export async function mealsRoutes(app: FastifyInstance) {
@@ -36,9 +36,9 @@ export async function mealsRoutes(app: FastifyInstance) {
 
         await knex('meals').insert({
           id: randomUUID(),
-          mealName,
+          meal_name: mealName,
           description,
-          insideDiet,
+          inside_diet: insideDiet,
           created_at: new Date().toISOString(),
           updated_at: '',
           user_id: userId,
@@ -163,9 +163,9 @@ export async function mealsRoutes(app: FastifyInstance) {
             })
             .first()
             .update({
-              mealName,
+              meal_name: mealName,
               description,
-              insideDiet,
+              inside_diet: insideDiet,
               updated_at: new Date().toISOString(),
             })
 
@@ -241,14 +241,16 @@ export async function mealsRoutes(app: FastifyInstance) {
             .where('user_id', user.id)
             .orderBy('created_at')
 
-          const mealsInsideDiet = meals.filter((meal) => meal.insideDiet === 1)
-          const mealsOutsideDiet = meals.filter((meal) => meal.insideDiet === 0)
+          const mealsInsideDiet = meals.filter((meal) => meal.inside_diet === 1)
+          const mealsOutsideDiet = meals.filter(
+            (meal) => meal.inside_diet === 0,
+          )
 
           let currentSequence: Array<object> = []
           let bestSequence: Array<object> = []
 
           for (const meal of meals) {
-            if (meal.insideDiet === 1) {
+            if (meal.inside_diet === 1) {
               currentSequence.push(meal)
             } else {
               currentSequence = []
