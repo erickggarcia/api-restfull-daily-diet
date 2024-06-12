@@ -9,3 +9,6 @@
 
 #### Para a criação da aplicação utilizei o query builder "knex", para auxiliar nas querys e o framework fastify para subir o servidor.
 #### Também utilizei alguns frameworks para validação como bcrypt - para encriptação de senha, e o zod, para validação dos tipos de dados.
+
+
+    "knex": "node --no-warnings --loader tsx ./node_modules/.bin/knex"
