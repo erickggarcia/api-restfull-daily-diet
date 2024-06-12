@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "tsx watch src/server.ts",
+    "build": "tsup src --out-dir build",
     "lint": "eslint src --ext .ts --fix",
     "knex": "node --no-warnings --loader tsx ./node_modules/knex/bin/cli.js --knexfile ./knexfile.ts"
   },
@@ -16,6 +17,7 @@
     "@types/node": "^20.5.9",
     "eslint": "^8.48.0",
     "sqlite3": "^5.1.6",
+    "tsup": "^8.1.0",
     "tsx": "^3.12.8",
     "typescript": "^5.2.2"
   },
