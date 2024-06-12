@@ -22,9 +22,9 @@
     "sqlite3": "^5.1.6",
     "typescript": "^5.2.2"
     },
+    "dependencies": {
     "tsup": "^8.1.0",
     "tsx": "^3.12.8",
-  "dependencies": {
     "@fastify/cookie": "^9.3.1",
     "@types/bcrypt": "^5.0.0",
     "bcrypt": "^5.1.1",
