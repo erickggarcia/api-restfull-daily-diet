@@ -1,5 +1,3 @@
-import { config as configKnex } from './src/database'
-
-const config = configKnex
+import { config  } from './src/database'
 
 export default config
