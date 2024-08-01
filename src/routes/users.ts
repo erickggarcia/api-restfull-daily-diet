@@ -37,7 +37,7 @@ export async function usersRoutes(app: FastifyInstance) {
           lastName,
           email,
           password,
-          created_at: new Date().toISOString(),
+          //created_at: new Date().toISOString(),
         })
 
         return reply.code(201).send({ message: 'usuário criado com sucesso' })
