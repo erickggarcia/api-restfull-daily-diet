@@ -10,7 +10,8 @@
     "dev": "tsx watch src/server.ts",
     "build": "tsup src --out-dir build",
     "lint": "eslint src --ext .ts --fix",
-    "knex": "node --no-warnings --loader tsx ./node_modules/knex/bin/cli.js --knexfile ./knexfile.ts"
+    "knex": "node --no-warnings --loader tsx ./node_modules/.bin/knex"
+    //"knex": "node --no-warnings --loader tsx ./node_modules/knex/bin/cli.js --knexfile ./knexfile.ts"
   },
   "keywords": [],
   "author": "",
