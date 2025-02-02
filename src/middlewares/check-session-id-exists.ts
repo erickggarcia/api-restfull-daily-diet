@@ -1,5 +1,11 @@
 import { FastifyReply, FastifyRequest } from 'fastify'
 
+declare module 'fastify' {
+  interface FastifyRequest {
+    sessionId?: string
+  }
+}
+
 export async function checkSessionIdExists(
   request: FastifyRequest,
   reply: FastifyReply,
@@ -8,7 +14,9 @@ export async function checkSessionIdExists(
 
   if (!sessionId) {
     return reply.status(401).send({
-      error: 'unauthorized',
+      error: 'Faça login pu cadastre-se para continuar',
     })
+  } else {
+    request.sessionId = sessionId
   }
 }

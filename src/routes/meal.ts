@@ -10,21 +10,6 @@ export async function mealsRoutes(app: FastifyInstance) {
     { preHandler: [checkSessionIdExists] },
     async (request, reply) => {
       try {
-        const sessionId = request.cookies.sessionId
-
-        const user = await knex('users')
-          .where('session_id', sessionId)
-          .select('id')
-          .first()
-
-        if (!user) {
-          return reply.code(401).send({
-            message: 'Faça login ou cadastre-se para criar uma refeição',
-          })
-        }
-
-        const userId = user.id
-
         const createMealsBodySchema = z.object({
           mealName: z.string(),
           description: z.string(),
@@ -34,19 +19,38 @@ export async function mealsRoutes(app: FastifyInstance) {
         const { mealName, description, insideDiet } =
           createMealsBodySchema.parse(request.body)
 
-        await knex('meals').insert({
-          id: randomUUID(),
-          meal_name: mealName,
-          description,
-          inside_diet: insideDiet,
-          created_at: new Date().toISOString(),
-          updated_at: '',
-          user_id: userId,
-        })
+        const sessionId = request.sessionId
 
-        return reply.code(201).send({ msg: 'Refeição registrada com sucesso' })
+        if (sessionId) {
+          const user = await knex('users')
+            .where('session_id', sessionId)
+            .select('id')
+            .first()
+
+          if (user) {
+            const userId = user.id
+
+            await knex('meals').insert({
+              id: randomUUID(),
+              meal_name: mealName,
+              description,
+              inside_diet: insideDiet,
+              created_at: new Date().toISOString(),
+              updated_at: '',
+              user_id: userId,
+            })
+
+            return reply
+              .code(201)
+              .send({ msg: 'Refeição registrada com sucesso' })
+          } else {
+            return reply.code(500).send({
+              msg: 'Não foi possível registrar sua refeição, tente novamente mais tarde ou entre em contato com o suporte',
+            })
+          }
+        }
       } catch (e) {
-        return reply.code(401).send({ msg: 'um erro ocorreu', e })
+        return reply.code(500).send({ msg: 'um erro ocorreu', e })
       }
     },
   )
@@ -56,7 +60,7 @@ export async function mealsRoutes(app: FastifyInstance) {
     { preHandler: [checkSessionIdExists] },
     async (request, reply) => {
       try {
-        const sessionId = request.cookies.sessionId
+        const sessionId = request.sessionId
 
         const user = await knex('users')
           .where('session_id', sessionId)
@@ -79,7 +83,7 @@ export async function mealsRoutes(app: FastifyInstance) {
           return reply.code(401).send({ message: 'Usuário não encontrado' })
         }
       } catch (e) {
-        return reply.code(401).send({ msg: 'um erro ocorreu', e })
+        return reply.code(500).send({ msg: 'um erro ocorreu', e })
       }
     },
   )
@@ -89,7 +93,7 @@ export async function mealsRoutes(app: FastifyInstance) {
     { preHandler: [checkSessionIdExists] },
     async (request, reply) => {
       try {
-        const sessionId = request.cookies.sessionId
+        const sessionId = request.sessionId
 
         const user = await knex('users')
           .where('session_id', sessionId)
@@ -114,7 +118,7 @@ export async function mealsRoutes(app: FastifyInstance) {
             return reply.code(201).send({ message: 'Refeição: ', meal })
           } else {
             return reply
-              .code(401)
+              .code(404)
               .send({ message: 'A refeição que você procura não existe' })
           }
         } else {
@@ -123,7 +127,7 @@ export async function mealsRoutes(app: FastifyInstance) {
           })
         }
       } catch (e) {
-        return reply.code(401).send({ msg: 'um erro ocorreu', e })
+        return reply.code(500).send({ msg: 'um erro ocorreu', e })
       }
     },
   )
@@ -133,7 +137,7 @@ export async function mealsRoutes(app: FastifyInstance) {
     { preHandler: [checkSessionIdExists] },
     async (request, reply) => {
       try {
-        const sessionId = request.cookies.sessionId
+        const sessionId = request.sessionId
 
         const user = await knex('users')
           .where('session_id', sessionId)
@@ -178,7 +182,7 @@ export async function mealsRoutes(app: FastifyInstance) {
             .send({ message: 'A refeição que você procura não existe' })
         }
       } catch (e) {
-        return reply.code(401).send({ msg: 'um erro ocorreu', e })
+        return reply.code(500).send({ msg: 'um erro ocorreu', e })
       }
     },
   )
@@ -188,7 +192,7 @@ export async function mealsRoutes(app: FastifyInstance) {
     { preHandler: [checkSessionIdExists] },
     async (request, reply) => {
       try {
-        const sessionId = request.cookies.sessionId
+        const sessionId = request.sessionId
 
         const user = await knex('users')
           .where('session_id', sessionId)
@@ -215,21 +219,21 @@ export async function mealsRoutes(app: FastifyInstance) {
             .send({ message: 'Refeição deletada com sucesso' })
         } else {
           return reply
-            .code(401)
+            .code(404)
             .send({ message: 'A refeição que você procura não existe' })
         }
       } catch (e) {
-        return reply.code(401).send({ msg: 'um erro ocorreu', e })
+        return reply.code(500).send({ msg: 'um erro ocorreu', e })
       }
     },
   )
 
   app.get(
-    '//summary',
+    '/summary',
     { preHandler: [checkSessionIdExists] },
     async (request, reply) => {
       try {
-        const sessionId = request.cookies.sessionId
+        const sessionId = request.sessionId
 
         const user = await knex('users')
           .where('session_id', sessionId)
@@ -269,11 +273,11 @@ export async function mealsRoutes(app: FastifyInstance) {
           })
         } else {
           return reply
-            .code(401)
+            .code(404)
             .send({ message: 'Ainda não existem refeições cadastradas' })
         }
       } catch (e) {
-        return reply.code(401).send({ msg: 'um erro ocorreu', e })
+        return reply.code(500).send({ msg: 'um erro ocorreu', e })
       }
     },
   )

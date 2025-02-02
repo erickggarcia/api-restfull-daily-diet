@@ -37,7 +37,7 @@ export async function usersRoutes(app: FastifyInstance) {
           lastName,
           email,
           password,
-          //created_at: new Date().toISOString(),
+          created_at: new Date().toISOString(),
         })
 
         return reply.code(201).send({ message: 'usuário criado com sucesso' })
@@ -45,7 +45,7 @@ export async function usersRoutes(app: FastifyInstance) {
         return reply.code(401).send({ message: 'usuário já cadastrado' })
       }
     } catch (e) {
-      return reply.code(401).send({ message: 'Erro interno', e })
+      return reply.code(500).send({ message: 'Erro interno', e })
     }
   })
 
@@ -58,7 +58,7 @@ export async function usersRoutes(app: FastifyInstance) {
 
       const { email, password } = loginUserBodySchema.parse(request.body)
 
-      let sessionId = request.cookies.sessionId
+      let sessionId = request.sessionId
 
       async function checkIfUserExists() {
         const user = await knex('users').where('email', email).first()
@@ -89,7 +89,7 @@ export async function usersRoutes(app: FastifyInstance) {
         }
       }
     } catch (e) {
-      return reply.code(401).send({ message: 'Erro interno', e })
+      return reply.code(500).send({ message: 'Erro interno', e })
     }
   })
 
@@ -102,7 +102,7 @@ export async function usersRoutes(app: FastifyInstance) {
 
         return reply.code(200).send({ message: 'Logout bem-sucedido' })
       } catch (e) {
-        return reply.code(401).send({ message: 'Erro interno', e })
+        return reply.code(500).send({ message: 'Erro interno', e })
       }
     },
   )
